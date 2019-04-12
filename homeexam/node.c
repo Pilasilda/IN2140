@@ -1,39 +1,46 @@
 #include "header.h"
 int tcp_socketclient;
-struct sockaddr_in socket_address = {0};
-struct node **naboene;
-naboene = malloc(sizeof(struct node));
+struct node **nodene;
+struct sockaddr_in socket_address;
 socklen_t client;
 
-
-struct nabo{
-  int egde;
-  int node;
-};
-
-struct node{
-  int id;
-};
-
 int main(int argc, char* argv[]){
-  int connect,check,j,a;
-  char* i;
-  connect = connect_socket();
+  int port, edges,tcp_socket;
+  int j = 0;
+  port = atoi(argv[1]);
+  printf("Port:% d\n",  port);
+  edges = atoi(argv[2]);
+  printf("Node id: %d\n", edges);
+  char* neighbour = argv [3];
 
-  /*
-  **node information
-  */
-  check = edge_info(argv[2]);
+  //finding neighbours og edges
+  int size = sizeof(neighbour);
+  char div [] = ":";
+  char* str = strtok(neighbour,div);
 
-  /*
-  ** number of arguments
-  */
-  if(argc > 0){
-    j  = argc-3;
-    return 0;
+  while(str != NULL){
+    printf("%d\n",str);
+    str = strtok(NULL, div);
+    printf("Naboer: %d%c%d",port, div,edges);
   }
 
-  edge_info(argv[j]);
+  //Setting up socket connection
+  printf("Setting up connection socket\n");
+  tcp_socket = connect_socket();
+
+  if(tcp_socket == 0){
+    exit(EXIT_FAILURE);
+  }
+  /*
+  **number of arguments
+  */
+  //tcp_socket = edge_info(port, edges);
+  //fprintf(stderr,"%d\n", tcp_socket);
+
+  /*
+  for(j = 3; j < argc; j++){
+    printf("Arguments%s\n", argv[j]);
+  }*/
 
 
   /*1. Finne antall noder
@@ -50,9 +57,8 @@ int main(int argc, char* argv[]){
   4. sprint: forløkke som går gjennom melding legger til melding
   5. If test som sjekker om riktig antall melding blir sendt
   */
-
-
 }
+
 
 int connect_socket(){
   if((tcp_socketclient = socket(AF_INET, SOCK_STREAM, 0)) < 0){
@@ -61,7 +67,7 @@ int connect_socket(){
   }
 
   socket_address.sin_family = AF_INET;
-  socket_address.sin_postruct ruter **rutere;rt = htons(SERVER_PORT);
+  socket_address.sin_port = htons(SERVER_PORT);
   socket_address.sin_addr.s_addr = inet_addr("127.0.0.1");
   /*
   ** Coonect socket to server using struct
@@ -83,20 +89,19 @@ int connect_socket(){
 /*
 **sends edge information to server
 */
-int edge_info(char *adress, int num){
-  int i;
-  /*
-  ** Value of node
-  */
+int edge_info(int adress, int num){
+  nodene  = malloc(sizeof(struct node*));
+  //int i;
   char msg[MAXDATASIZE];
-  sprintf(msg, "Node id:%d\n", adress);
-  printf("%s",msg);
+
+  sprintf(msg, "Node id: %d\n", adress);
+  sprintf(msg, "Neighbour: %s %d\n",msg, num);
+
   /*
-  ** Neighbour of node
-  */
-  sprintf(msg, "Neighbour:%s%d\n",msg, num);
-  //printf("%s",msg);
   for(i = 0; i < num; i++){
-    sprintf(msg, "%s %d %d", msg, naboene[i]->id);
-  }
+    sprintf(msg, "%s %d %d", msg, nodene[i]->id, nodene[i]->vekt);
+  }*/
+  //printf("%s\n", msg);
+
+  return 1;
 }

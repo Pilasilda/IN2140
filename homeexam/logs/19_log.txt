@@ -1,1 +1,5 @@
-run_1.sh: line 41: ./node: No such file or directory
+Port: 1024
+Node id: 19
+578236635
+Naboer: 1024à19578236638
+Naboer: 1024à19Setting up connection socket

@@ -9,6 +9,12 @@ int main(int argc, char *argv[]){
   int tcp_socket;
 
   tcp_socket = create_tcpsocket();
+
+  //Runningserver
+  if(argc >= 1 && !strcmp(argv[1], "single")){
+    printf("Running single server\n");
+    run_server(tcp_socket);
+  }
 }
 
 /*
@@ -16,7 +22,6 @@ int main(int argc, char *argv[]){
 */
 int create_tcpsocket(){
   int counter;
-  int accepted;
   int var;
   /*
   ** Message on terminal creating socket
@@ -67,22 +72,44 @@ int create_tcpsocket(){
 
   printf("Listning to socket now\n");
 
+  /*
   client = sizeof(storage);
   accepted = accept(tcp_socket, (struct sockaddr*) &storage, &client);
-
   if(accepted < 0){
     printf("Server accept failed\n");
     perror("accepted");
   }else{
     printf("Server accepted client\n");
   }
+  send(accepted,buffer,sizeof(server_address),0);*/
 
-  //strcpy(buffer, "Hello world\n");
-  send(accepted,buffer,sizeof(server_address),0);
-
-  return 0;
+  return tcp_socket;
 }
 
+void run_server(int socket){
+  struct sockaddr_in client_addr;
+  socklen_t addrlen = sizeof(struct sockaddr_in);
+  char buffer[16];
+
+  while(1){
+    int i;
+    i = accept(socket,(struct sockaddr*) &client_addr, &addrlen);
+    if(i == -1){
+      printf("Accept() failed");
+      perror("accept");
+      return;
+    }
+
+    if(!inet_ntop(client_addr.sin_family,&(client_addr.sin_addr),buffer,addrlen)){
+      printf("Error!\n");
+      perror("inet_ntop");
+      strcpy(buffer, "N/A");
+    }
+    printf("Connection %s and port %u\n",buffer,ntohs(client_addr.sin_port));
+    write(i, Respons, strlen(Respons));
+    close(i);
+  }
+}
 
 /*
 int dijsktra(int cost[antall][antall], int n, int start){
@@ -143,11 +170,4 @@ int dijsktra(int cost[antall][antall], int n, int start){
         }while(j!=start);
       }
       return 0;
-}
-
-int main(int argc, char* argv[]){
-  if(argc < 1){
-    return 0;
-  }
-  dijsktra(argv[1],argv[2],argv[3]);
 }*/

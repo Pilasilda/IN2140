@@ -19,14 +19,31 @@
 #define INFINITY 9999
 #define SERVER_PORT 1024
 #define BACKLOG 32
+#define MAX_NEIGHBOURS 20
+#define Respons "Connection accpted! Thank you!\n"
+
+int N = 0;
+
+struct nabo{
+  int edge;
+  int node;
+  struct node *nabo[MAX_NEIGHBOURS];
+};
+
+struct node{
+  int id;
+  int vekt;
+};
 
 
 char buffer[MAXDATASIZE];
 
 //Methods
+void run_server(int);
 int create_socket();
+int connect_socket();
 int create_tcpsocket();
-int edge_info(char*);
+int edge_info(int, int);
 //int dijsktra(int, int , int);
 
 #endif

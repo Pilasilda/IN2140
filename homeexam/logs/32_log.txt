@@ -1,0 +1,5 @@
+Port: 2345
+Node id: 32
+-1992597289
+Naboer: 2345°32-1992597287
+Naboer: 2345°32Setting up connection socket

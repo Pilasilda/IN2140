@@ -1,0 +1,5 @@
+Port: 2345
+Node id: 128
+495161569
+Naboer: 2345@128495161572
+Naboer: 2345@128Setting up connection socket

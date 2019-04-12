@@ -1,0 +1,5 @@
+Port: 2345
+Node id: 8
+1179046110
+Naboer: 2345€81179046112
+Naboer: 2345€8Setting up connection socket
