@@ -24,7 +24,7 @@ int create_tcpsocket(){
   int counter;
   int var;
   /*
-  ** Message on terminal creating socket
+  ** Message: creating socket
   */
   printf("Create server socket \n");
   /*
@@ -82,7 +82,6 @@ int create_tcpsocket(){
     printf("Server accepted client\n");
   }
   send(accepted,buffer,sizeof(server_address),0);*/
-
   return tcp_socket;
 }
 

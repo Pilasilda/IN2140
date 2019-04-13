@@ -22,28 +22,27 @@
 #define MAX_NEIGHBOURS 20
 #define Respons "Connection accpted! Thank you!\n"
 
-int N = 0;
-
-struct nabo{
-  int edge;
-  int node;
-  struct node *nabo[MAX_NEIGHBOURS];
-};
-
 struct node{
   int id;
-  int vekt;
+  int number_of_nodes;
+  int sock;
+  struct node* nodes[MAX_NEIGHBOURS];
 };
 
+struct neighbour{
+  int id;
+  int weight;
+};
 
 char buffer[MAXDATASIZE];
 
 //Methods
 void run_server(int);
 int create_socket();
-int connect_socket();
+int tcp_socket_client();
+struct neighbour* add_neighbour(char*);
 int create_tcpsocket();
-int edge_info(int, int);
+void edge_info(int, int, struct neighbour**);
 //int dijsktra(int, int , int);
 
 #endif

@@ -1,47 +1,40 @@
 #include "header.h"
-int tcp_socketclient;
-struct node **nodene;
-struct sockaddr_in socket_address;
-socklen_t client;
 
 int main(int argc, char* argv[]){
-  int port, edges,tcp_socket;
-  int j = 0;
-  port = atoi(argv[1]);
-  printf("Port:% d\n",  port);
-  edges = atoi(argv[2]);
-  printf("Node id: %d\n", edges);
-  char* neighbour = argv [3];
+  struct neighbour** nodene;
+  int id,tcp_socket;
+  long baseport;
+  int j=0;
+  char *div;
 
-  //finding neighbours og edges
-  int size = sizeof(neighbour);
-  char div [] = ":";
-  char* str = strtok(neighbour,div);
-
-  while(str != NULL){
-    printf("%d\n",str);
-    str = strtok(NULL, div);
-    printf("Naboer: %d%c%d",port, div,edges);
-  }
-
-  //Setting up socket connection
-  printf("Setting up connection socket\n");
-  tcp_socket = connect_socket();
-
-  if(tcp_socket == 0){
+  if(argc < 2){
     exit(EXIT_FAILURE);
   }
   /*
-  **number of arguments
+  ** reading 1 and 2 arugment
   */
-  //tcp_socket = edge_info(port, edges);
-  //fprintf(stderr,"%d\n", tcp_socket);
+  baseport = atoi(argv[1]);
+  printf("Port: %ld\n", baseport);
+  id = atoi(argv[2]);
+
+
+  for(j = 3; j < argc; j++){
+    nodene = malloc(sizeof(struct neighbour*)*j);
+    div = argv[j];
+    nodene[j] = add_neighbour(div);
+  }
+  //}
+
+  //Setting up socket connection
+  printf("Setting up connection socket\n");
 
   /*
-  for(j = 3; j < argc; j++){
-    printf("Arguments%s\n", argv[j]);
+  if(tcp_socket == 0){
+    exit(EXIT_FAILURE);
   }*/
 
+  tcp_socket = tcp_socket_client(baseport);
+  edge_info(id, j, nodene);
 
   /*1. Finne antall noder
   2. Først send adresse av node
@@ -60,14 +53,20 @@ int main(int argc, char* argv[]){
 }
 
 
-int connect_socket(){
-  if((tcp_socketclient = socket(AF_INET, SOCK_STREAM, 0)) < 0){
+int tcp_socket_client(long port){
+  int tcp_socketclient;
+  int counter=1;
+  struct sockaddr_in socket_address;
+  socklen_t client;
+
+  if((tcp_socketclient = socket(AF_INET, SOCK_STREAM, 0)) == -1){
     printf("\n Error during creating socket\n");
     return -1;
   }
 
+  setsockopt(tcp_socketclient, SOL_SOCKET, SO_REUSEADDR,&counter, sizeof(int));
   socket_address.sin_family = AF_INET;
-  socket_address.sin_port = htons(SERVER_PORT);
+  socket_address.sin_port = htons(port);
   socket_address.sin_addr.s_addr = inet_addr("127.0.0.1");
   /*
   ** Coonect socket to server using struct
@@ -75,33 +74,38 @@ int connect_socket(){
   client = sizeof(socket_address);
   connect(tcp_socketclient, (struct sockaddr*)&socket_address, client);
   /*
-  **read message from server into buffer
-  */
-  recv(tcp_socketclient, buffer, sizeof(buffer), 0);
-  /*
   **print received message
   */
   //printf("Data received:%s \n",buffer);
-  close(tcp_socketclient);
-  return 0;
+  return tcp_socketclient;
 }
 
 /*
+** method which malloc struct neighbour, used for reading arguments
+*/
+struct neighbour* add_neighbour(char* n){
+  struct neighbour* pointer;
+
+  pointer = malloc(sizeof(struct neighbour));
+  pointer->id = (int)atoi(strtok(n, ":"));
+  pointer->weight = (int)atoi(strtok(NULL,""));
+  return pointer;
+}
+/*
 **sends edge information to server
 */
-int edge_info(int adress, int num){
-  nodene  = malloc(sizeof(struct node*));
-  //int i;
+void edge_info(int adress,int num,struct neighbour** neighbour){
+  int i;
   char msg[MAXDATASIZE];
 
   sprintf(msg, "Node id: %d\n", adress);
+  printf("%s", msg);
+
   sprintf(msg, "Neighbour: %s %d\n",msg, num);
+  printf("%s",msg);
 
-  /*
   for(i = 0; i < num; i++){
-    sprintf(msg, "%s %d %d", msg, nodene[i]->id, nodene[i]->vekt);
-  }*/
-  //printf("%s\n", msg);
-
-  return 1;
+    sprintf(msg, "%s %d %d", msg, neighbour[i]->id, neighbour[i]->weight);
+  }
+  printf("%s\n", msg);
 }

@@ -30,7 +30,7 @@ cp $MESSAGES_FILENAME "./data.txt"
 ./routing_server $BASE_PORT 9          &>"$LOG_DIR/routing_server_log.txt" &
 
 # Wait for the central server to start. If you have to wait for more than 1 seconds you
-# are probably doing something wrong. 
+# are probably doing something wrong.
 sleep 1
 
 # Run all nodes
@@ -50,6 +50,3 @@ trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM
 # Wait for processes to finish
 echo "Waiting for processes to finish"
 wait
-
-
-
