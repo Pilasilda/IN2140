@@ -42,7 +42,7 @@ int create_socket();
 int tcp_socket_client();
 struct neighbour* add_neighbour(char*);
 int create_tcpsocket();
-void edge_info(int, int, struct neighbour**);
+void edge_info(int, int, struct neighbour**,int);
 //int dijsktra(int, int , int);
 
 #endif

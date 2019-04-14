@@ -10,7 +10,9 @@ int main(int argc, char *argv[]){
 
   tcp_socket = create_tcpsocket();
 
-  //Runningserver
+  /*
+  ** Runningserver
+  */
   if(argc >= 1 && !strcmp(argv[1], "single")){
     printf("Running single server\n");
     run_server(tcp_socket);

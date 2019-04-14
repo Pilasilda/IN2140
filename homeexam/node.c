@@ -1,8 +1,10 @@
 #include "header.h"
 
 int main(int argc, char* argv[]){
-  struct neighbour** nodene;
+  struct neighbour** nodene = {0};
   int id,tcp_socket;
+  int number_of_nodes;
+  number_of_nodes = argc-3;
   long baseport;
   int j=0;
   char *div;
@@ -11,37 +13,33 @@ int main(int argc, char* argv[]){
     exit(EXIT_FAILURE);
   }
   /*
-  ** reading 1 and 2 arugment
+  ** reading 1 and printing basportnr and 2 arugment which is the id of node
   */
   baseport = atoi(argv[1]);
   printf("Port: %ld\n", baseport);
   id = atoi(argv[2]);
 
-
-  for(j = 3; j < argc; j++){
-    nodene = malloc(sizeof(struct neighbour*)*j);
-    div = argv[j];
-    nodene[j] = add_neighbour(div);
+  /*
+  ** mallocing place for neighbour struct that contains nunmber of nodes
+  */
+  if(argc >= 3){
+    nodene = malloc(sizeof(struct neighbour*)*number_of_nodes);
+    for(j = 0; j < number_of_nodes; j++){
+      div = argv[j+3];
+      nodene[j] = add_neighbour(div);
+    }
   }
-  //}
 
   //Setting up socket connection
   printf("Setting up connection socket\n");
 
-  /*
-  if(tcp_socket == 0){
-    exit(EXIT_FAILURE);
-  }*/
-
   tcp_socket = tcp_socket_client(baseport);
-  edge_info(id, j, nodene);
+  edge_info(id, j, nodene, tcp_socket);
 
   /*1. Finne antall noder
   2. Først send adresse av node
   3. antall_ naboer finner: dette gjort i argc
   4. Går gjennom melding */
-
-
 
   /*
   1. FINNE ANTALL NODER1
@@ -83,29 +81,43 @@ int tcp_socket_client(long port){
 /*
 ** method which malloc struct neighbour, used for reading arguments
 */
-struct neighbour* add_neighbour(char* n){
+struct neighbour* add_neighbour(char* c){
   struct neighbour* pointer;
 
   pointer = malloc(sizeof(struct neighbour));
-  pointer->id = (int)atoi(strtok(n, ":"));
+  pointer->id = (int)atoi(strtok(c, ":"));
   pointer->weight = (int)atoi(strtok(NULL,""));
   return pointer;
 }
 /*
-**sends edge information to server
+**sends edge information to routing_server
 */
-void edge_info(int adress,int num,struct neighbour** neighbour){
+void edge_info(int adress,int num,struct neighbour** neighbour, int socket){
   int i;
-  char msg[MAXDATASIZE];
+  unsigned long pass;
+  char message[MAXDATASIZE];
 
-  sprintf(msg, "Node id: %d\n", adress);
-  printf("%s", msg);
-
-  sprintf(msg, "Neighbour: %s %d\n",msg, num);
-  printf("%s",msg);
-
+  sprintf(message, "Node id: %d\n", adress);
+  sprintf(message, "Number of neighbours: %d\n", num);
+  //printf("Number of neighbours: %s\n", msg);
+  //printf("%s\n", msg);
   for(i = 0; i < num; i++){
-    sprintf(msg, "%s %d %d", msg, neighbour[i]->id, neighbour[i]->weight);
+    sprintf(message, "%s %d : %d\n", message, neighbour[i]->id, neighbour[i]->weight);
   }
-  printf("%s\n", msg);
+  printf("%s\n", message);
+
+  /*
+  ** sending data on socket
+  */
+  pass = send(socket,message, sizeof(message), 0);
+
+  /*
+  ** checking if right number of messages are sent
+  */
+  if(pass < sizeof(message)){
+    perror("send() error");
+    exit(1);
+  }
+
+
 }
