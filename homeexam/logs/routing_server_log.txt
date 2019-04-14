@@ -1,6 +1,3 @@
-Create server socket 
-Socket created 
+Failed using bind(): Address already in use
+Creating TCP server socket
 Binding server socket to port 1024 
-Successfully bound
-Trying to listen to socket....
-Listning to socket now

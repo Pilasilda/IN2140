@@ -1,5 +1,9 @@
+Connection to server 2345, port 1024
 Port: 2345
 Node id: 4
--1884946205
-Naboer: 23454-1884946203
-Naboer: 23454Setting up connection socket
+Number of neighbours: 2
+Neighbours&weight:
+ 1 : 2
+ 16 : 5
+
+Sending 100 bytes. 

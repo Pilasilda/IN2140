@@ -1,5 +1,10 @@
+Connection to server 1024, port 1024
 Port: 1024
 Node id: 103
--1561042723
-Naboer: 1024103-1561042721
-Naboer: 1024103Setting up connection socket
+Number of neighbours: 3
+Neighbours&weight:
+ 1 : 6
+ 19 : 1
+ 107 : 4
+
+Sending 100 bytes. 

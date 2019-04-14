@@ -2,23 +2,19 @@
 
 int main(int argc, char* argv[]){
   struct neighbour** nodene = {0};
-  int id,tcp_socket;
-  int number_of_nodes;
+  int id,tcp_socket,port;
+  int number_of_nodes,i;
   number_of_nodes = argc-3;
-  long baseport;
+  int baseport;
   int j=0;
   char *div;
 
   if(argc < 2){
     exit(EXIT_FAILURE);
   }
-  /*
-  ** reading 1 and printing basportnr and 2 arugment which is the id of node
-  */
-  baseport = atoi(argv[1]);
-  printf("Port: %ld\n", baseport);
-  id = atoi(argv[2]);
 
+  baseport = atoi(argv[1]);
+  id = atoi(argv[2]);
   /*
   ** mallocing place for neighbour struct that contains nunmber of nodes
   */
@@ -29,12 +25,23 @@ int main(int argc, char* argv[]){
       nodene[j] = add_neighbour(div);
     }
   }
-
-  //Setting up socket connection
-  printf("Setting up connection socket\n");
-
+  /*Setting up socket connection*/
   tcp_socket = tcp_socket_client(baseport);
+  if(tcp_socket == 0){
+    exit(EXIT_FAILURE);
+  }
+  /*
+  ** reading 1 and printing basportnr and 2 arugment which is the id of node
+  */
+  printf("Port: %d", baseport);
+  printf("\nNode id: %d", id);
   edge_info(id, j, nodene, tcp_socket);
+
+  /*freeing allocated memory*/
+  for(i = 0; i<number_of_nodes; ++i){
+    free(nodene[i]);
+  }
+  free(nodene);
 
   /*1. Finne antall noder
   2. Først send adresse av node
@@ -50,32 +57,35 @@ int main(int argc, char* argv[]){
   */
 }
 
-
-int tcp_socket_client(long port){
-  int tcp_socketclient;
-  int counter=1;
+/*
+** method that creates tcp socket for node
+*/
+int tcp_socket_client(int ports){
+  int counter,tcp_socket_client = 1;
   struct sockaddr_in socket_address;
-  socklen_t client;
+  struct sockaddr_in serv_addr;
 
-  if((tcp_socketclient = socket(AF_INET, SOCK_STREAM, 0)) == -1){
-    printf("\n Error during creating socket\n");
-    return -1;
+
+  if((tcp_socket_client = socket(AF_INET, SOCK_STREAM,0)) == -1){
+    printf("Failed creating socket()\n");
+    perror("socket");
+    exit(EXIT_FAILURE);
   }
 
-  setsockopt(tcp_socketclient, SOL_SOCKET, SO_REUSEADDR,&counter, sizeof(int));
+  //printf("TCP socket for client created \n");
+  /*Specifying connection and port, assign ip and port*/
+  setsockopt(tcp_socket_client, SOL_SOCKET, SO_REUSEADDR,&counter, sizeof(int));
   socket_address.sin_family = AF_INET;
-  socket_address.sin_port = htons(port);
+  socket_address.sin_port = htons(SERVER_PORT);
   socket_address.sin_addr.s_addr = inet_addr("127.0.0.1");
-  /*
-  ** Coonect socket to server using struct
-  */
-  client = sizeof(socket_address);
-  connect(tcp_socketclient, (struct sockaddr*)&socket_address, client);
-  /*
-  **print received message
-  */
-  //printf("Data received:%s \n",buffer);
-  return tcp_socketclient;
+
+  printf("Connection to server %d, port %d\n", ports, SERVER_PORT);
+  if(connect(tcp_socket_client, (struct sockaddr*)&socket_address, sizeof(serv_addr)) < 0){
+    printf("Failed connect()\n");
+    perror("connect");
+    return 1;
+  }
+  return tcp_socket_client;
 }
 
 /*
@@ -89,6 +99,7 @@ struct neighbour* add_neighbour(char* c){
   pointer->weight = (int)atoi(strtok(NULL,""));
   return pointer;
 }
+
 /*
 **sends edge information to routing_server
 */
@@ -98,26 +109,20 @@ void edge_info(int adress,int num,struct neighbour** neighbour, int socket){
   char message[MAXDATASIZE];
 
   sprintf(message, "Node id: %d\n", adress);
-  sprintf(message, "Number of neighbours: %d\n", num);
-  //printf("Number of neighbours: %s\n", msg);
-  //printf("%s\n", msg);
+  sprintf(message, "\nNumber of neighbours: %d\nNeighbours&weight:\n", num);
+
   for(i = 0; i < num; i++){
     sprintf(message, "%s %d : %d\n", message, neighbour[i]->id, neighbour[i]->weight);
   }
   printf("%s\n", message);
 
-  /*
-  ** sending data on socket
-  */
+  /*sending data to socket*/
   pass = send(socket,message, sizeof(message), 0);
 
-  /*
-  ** checking if right number of messages are sent
-  */
+  /*checking if right number of messages are sent*/
   if(pass < sizeof(message)){
     perror("send() error");
     exit(1);
   }
-
-
+  printf("Sending %lu bytes. \n", pass);
 }

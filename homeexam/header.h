@@ -39,7 +39,7 @@ char buffer[MAXDATASIZE];
 //Methods
 void run_server(int);
 int create_socket();
-int tcp_socket_client();
+int tcp_socket_client(int);
 struct neighbour* add_neighbour(char*);
 int create_tcpsocket();
 void edge_info(int, int, struct neighbour**,int);

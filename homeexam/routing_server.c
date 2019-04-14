@@ -1,6 +1,6 @@
 #include "header.h"
 struct sockaddr_in server_address;
-struct sockaddr_storage storage;
+int len = sizeof(server_address);
 
 socklen_t client;
 int tcp_socket;
@@ -9,84 +9,52 @@ int main(int argc, char *argv[]){
   int tcp_socket;
 
   tcp_socket = create_tcpsocket();
-
-  /*
-  ** Runningserver
-  */
-  if(argc >= 1 && !strcmp(argv[1], "single")){
-    printf("Running single server\n");
-    run_server(tcp_socket);
-  }
+  //run_server(tcp_socket);
 }
 
 /*
-** method for creating tcp socket
+** method for creating tcp socket for server
 */
 int create_tcpsocket(){
-  int counter;
-  int var;
-  /*
-  ** Message: creating socket
-  */
-  printf("Create server socket \n");
-  /*
-  ** creating the socket and verfication
-  */
-  tcp_socket = socket(AF_INET, SOCK_STREAM, 0);
+  int counter = 1;
+  int var,tcp_socket_server;
 
-  if(tcp_socket == -1){
-    printf("Failed creating the socket()");
-    perror("socket");
-    exit(0);
+  printf("Creating TCP server socket\n");
+  /*creating the socket and verfication  */
+  tcp_socket_server = socket(AF_INET, SOCK_STREAM, 0);
+  if(tcp_socket_server == -1){
+    printf("Failed creating the socket()\n");
+    exit(1);
   }
-  /*
-  ** Message to terminal socket created
-  */
-  printf("Socket created \n");
-  /*
-  **  Specifying connection and port, assign ip and port
-  */
-  server_address.sin_family = AF_INET; //adress for IPv4
+
+  //printf("TCP socket created \n");
+  /*Specifying connection and port, assign ip and port*/
+  /*possible to reuse port after previous user*/
+  setsockopt(tcp_socket, SOL_SOCKET, SO_REUSEADDR,&counter, sizeof(int));
+  server_address.sin_family = AF_INET;
   server_address.sin_port = htons(SERVER_PORT);
   server_address.sin_addr.s_addr = INADDR_ANY;
-  /*
-  ** possible to reuse port after previous user
-  */
-  setsockopt(tcp_socket, SOL_SOCKET, SO_REUSEADDR,&counter, sizeof(int));
+
+  /*Binding to adress*/
   printf("Binding server socket to port %d \n", SERVER_PORT);
-  var = bind(tcp_socket, (struct sockaddr*) &server_address, sizeof(server_address));
-
-  if(var){
-    printf("Failed using bind()");
-    perror("bind");
-    exit(0);
+  if(bind(tcp_socket_server, (struct sockaddr*) &server_address, sizeof(server_address)) < 0){
+    perror("Failed using bind()");
+    exit(EXIT_FAILURE);
   }
+  //printf("Socket successfully bound\n");
+  //printf("Trying to listen to socket....\n");
 
-  printf("Successfully bound\n");
-  printf("Trying to listen to socket....\n");
-
-  var = listen(tcp_socket, BACKLOG);
+  var = listen(tcp_socket_server, BACKLOG);
   if(var == -1){
     printf("Failed listning");
-    perror("Listning\n");
-    exit(0);
+    exit(EXIT_FAILURE);
   }
+  run_server(tcp_socket_server);
 
-  printf("Listning to socket now\n");
-
-  /*
-  client = sizeof(storage);
-  accepted = accept(tcp_socket, (struct sockaddr*) &storage, &client);
-  if(accepted < 0){
-    printf("Server accept failed\n");
-    perror("accepted");
-  }else{
-    printf("Server accepted client\n");
-  }
-  send(accepted,buffer,sizeof(server_address),0);*/
   return tcp_socket;
 }
 
+/*server for max number of clients/nodes*/
 void run_server(int socket){
   struct sockaddr_in client_addr;
   socklen_t addrlen = sizeof(struct sockaddr_in);
