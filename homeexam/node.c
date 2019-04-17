@@ -3,7 +3,8 @@
 int main(int argc, char* argv[]){
   struct neighbour** nodene = {0};
   int id,tcp_socket,port;
-  int number_of_nodes,i;
+  int i;
+
   number_of_nodes = argc-3;
   int baseport;
   int j=0;
@@ -43,18 +44,15 @@ int main(int argc, char* argv[]){
   }
   free(nodene);
 
-  /*1. Finne antall noder
-  2. Først send adresse av node
-  3. antall_ naboer finner: dette gjort i argc
-  4. Går gjennom melding */
-
   /*
-  1. FINNE ANTALL NODER1
-  2. SPRINTF: FØRST SEND MED ADRESSE TIL Node
-  3. SPRINTF: antall nabo finner det ved argc-3
-  4. sprint: forløkke som går gjennom melding legger til melding
-  5. If test som sjekker om riktig antall melding blir sendt
+  1. Vente på tilkoblinger fra noder
+  2. Motta adresse og kant-info
+  3. Kaller metode som tester at hver kant er rapportert to ganger
+  4. Kaller dijsktra for å beregne korteste vei fra 1 til alle noder
+  5. sender/kaller på metode som sender ruting-tabeller
   */
+
+
 }
 
 /*
@@ -106,14 +104,19 @@ struct neighbour* add_neighbour(char* c){
 void edge_info(int adress,int num,struct neighbour** neighbour, int socket){
   int i;
   unsigned long pass;
+  /*char buffer to store message*/
   char message[MAXDATASIZE];
 
+  /*Using sprintf function, because instead of printing this information to console/terminal it will store it on a char buffer in my case message defined over*/
   sprintf(message, "Node id: %d\n", adress);
   sprintf(message, "\nNumber of neighbours: %d\nNeighbours&weight:\n", num);
 
+  /*Looping through all the possible neighbours passed as arguments*/
   for(i = 0; i < num; i++){
     sprintf(message, "%s %d : %d\n", message, neighbour[i]->id, neighbour[i]->weight);
   }
+
+  /*Printing all information that is stored in charbuffer message, also the previous messages that is stored, like id of node and number of arguments*/
   printf("%s\n", message);
 
   /*sending data to socket*/
@@ -124,5 +127,5 @@ void edge_info(int adress,int num,struct neighbour** neighbour, int socket){
     perror("send() error");
     exit(1);
   }
-  printf("Sending %lu bytes. \n", pass);
+  //printf("Sending %lu bytes. \n", pass);
 }

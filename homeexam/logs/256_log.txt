@@ -1,4 +1,6 @@
+connect: Connection refused
 Connection to server 2345, port 1024
+Failed connect()
 Port: 2345
 Node id: 256
 Number of neighbours: 4
@@ -8,4 +10,3 @@ Neighbours&weight:
  64 : 5
  128 : 3
 
-Sending 100 bytes. 

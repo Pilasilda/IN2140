@@ -1,3 +1,29 @@
-Failed using bind(): Address already in use
-Creating TCP server socket
-Binding server socket to port 1024 
+
+Distance of node 0->2
+
+Path=0
+<-1
+Distance of node 2->3
+
+Path=2
+<-3<-1
+Distance of node 3->2
+
+Path=3
+<-1
+Distance of node 4->4
+
+Path=4
+<-3<-1
+Distance of node 5->7
+
+Path=5
+<-1
+Distance of node 6->8
+
+Path=6
+<-7<-4<-3<-1
+Distance of node 7->6
+
+Path=7
+<-4<-3<-1

@@ -10,7 +10,7 @@ node: node.c
 	$(CC) $(CFLAGS) node.c -o node
 
 run: all
-	bash run_1.sh 1024
+	bash run_1.sh 1111
 	bash run_2.sh 2345
 
 clean:

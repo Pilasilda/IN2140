@@ -1,5 +1,7 @@
-Connection to server 1024, port 1024
-Port: 1024
+connect: Connection refused
+Connection to server 1111, port 1024
+Failed connect()
+Port: 1111
 Node id: 19
 Number of neighbours: 3
 Neighbours&weight:
@@ -7,4 +9,3 @@ Neighbours&weight:
  101 : 2
  103 : 1
 
-Sending 100 bytes. 
